@@ -31,23 +31,23 @@ async function run() {
     const cameraShop = client.db("camera-shop").collection("camera");
 
     // ------------- toy post ------------ 
-    app.post('/cameras', async(req, res) => {
+    app.post('/cameras', async (req, res) => {
       const product = req.body;
       const result = await cameraShop.insertOne(product)
       res.send(result)
     })
 
     // ------ get all data ----------
-    app.get('/cameras', async(req, res) => {
+    app.get('/cameras', async (req, res) => {
       const result = await cameraShop.find().toArray()
       res.send(result)
     })
 
     // ------------ my toy data get -----------
-    app.get('/camera', async(req, res) => {
+    app.get('/camera', async (req, res) => {
       let query = {}
-      if(req.query?.email){
-        query = {email : req.query.email}
+      if (req.query?.email) {
+        query = { email: req.query.email }
       }
       const result = await cameraShop.find(query).toArray()
       res.send(result)
@@ -55,15 +55,30 @@ async function run() {
 
     // ------------- all toy detail data ----------
 
-    app.get('/cameras/:id', async(req, res) => {
+    app.get('/cameras/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const result = await cameraShop.findOne(query);
       res.send(result)
     })
 
+    // --------------- update my toy -------------
+    app.put('/cameras/:id', async (req, res) => {
+      const newData = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          ...newData
+        },
+      };
+      const result = await cameraShop.updateOne(filter, updateDoc, options);
+      res.send(result)
+    })
 
-// ================== client site handel start ===================
+
+    // ================== client site handel start ===================
 
 
     // Send a ping to confirm a successful connection
@@ -83,5 +98,5 @@ app.get('/', (req, res) => {
 })
 
 app.listen(port, () => {
-    console.log(`to server site ranning is ${port}`)
+  console.log(`to server site ranning is ${port}`)
 })
