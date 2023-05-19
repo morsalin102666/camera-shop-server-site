@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -40,6 +40,25 @@ async function run() {
     // ------ get all data ----------
     app.get('/cameras', async(req, res) => {
       const result = await cameraShop.find().toArray()
+      res.send(result)
+    })
+
+    // ------------ my toy data get -----------
+    app.get('/camera', async(req, res) => {
+      let query = {}
+      if(req.query?.email){
+        query = {email : req.query.email}
+      }
+      const result = await cameraShop.find(query).toArray()
+      res.send(result)
+    })
+
+    // ------------- all toy detail data ----------
+
+    app.get('/cameras/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await cameraShop.findOne(query);
       res.send(result)
     })
 
