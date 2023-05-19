@@ -77,6 +77,14 @@ async function run() {
       res.send(result)
     })
 
+    // --------- delet post -----------
+    app.delete('/cameras/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const result = await cameraShop.deleteOne(query)
+      res.send(result)
+    })
+
 
     // ================== client site handel start ===================
 
