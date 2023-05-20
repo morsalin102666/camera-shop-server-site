@@ -6,8 +6,17 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 
-app.use(cors())
+
+const corsConfig = {
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE']
+}
+app.use(cors(corsConfig))
+app.options("", cors(corsConfig))
 app.use(express.json())
+
+
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mewurzb.mongodb.net/?retryWrites=true&w=majority`;
@@ -53,6 +62,16 @@ async function run() {
       res.send(result)
     })
 
+    // ------------- cetagory data get --------------
+    app.get('/cetagorys', async(req, res) => {
+      let query = {}
+      if(req.query?.subCategory){
+        query = { subCategory : req.query.subCategory}
+      }
+      const result = await cameraShop.find(query).toArray()
+      res.send(result)
+    })
+
     // ------------- all toy detail data ----------
 
     app.get('/cameras/:id', async (req, res) => {
@@ -84,6 +103,7 @@ async function run() {
       const result = await cameraShop.deleteOne(query)
       res.send(result)
     })
+
 
 
     // ================== client site handel start ===================
