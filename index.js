@@ -42,13 +42,14 @@ async function run() {
     // ------------- toy post ------------ 
     app.post('/cameras', async (req, res) => {
       const product = req.body;
+      product.price = parseInt(req.body.price)
       const result = await cameraShop.insertOne(product)
       res.send(result)
     })
 
     // ------ get all data ----------
     app.get('/cameras', async (req, res) => {
-      const result = await cameraShop.find().toArray()
+      const result = await cameraShop.find().limit(20).toArray()
       res.send(result)
     })
 
@@ -72,6 +73,17 @@ async function run() {
       res.send(result)
     })
 
+
+    // ------------- searcing data get --------------
+    app.get('/searching', async(req, res) => {
+      let query = {}
+      if(req.query?.productName){
+        query = { productName : req.query.productName}
+      }
+      const result = await cameraShop.find(query).toArray()
+      res.send(result)
+    })
+
     // ------------- all toy detail data ----------
 
     app.get('/cameras/:id', async (req, res) => {
@@ -84,6 +96,7 @@ async function run() {
     // --------------- update my toy -------------
     app.put('/cameras/:id', async (req, res) => {
       const newData = req.body;
+      newData.price = parseInt(req.body.price)
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) }
       const options = { upsert: true };
@@ -104,6 +117,33 @@ async function run() {
       res.send(result)
     })
 
+
+    // app.get('/drone', async(req, res) => {
+    //   const query = {subCategory: 'DSLR'}
+    //   const result = await cameraShop.find(query).toArray()
+    //   res.send(result)
+    // })
+
+    
+    // ---------- Descending data ----------
+    app.get('/descending', async(req, res) => {
+      let query = {}
+      if (req.query?.email) {
+        query = { email: req.query.email }
+      }
+      const result = await cameraShop.find(query).sort({price: 1}).toArray()
+      res.send(result)
+    })
+
+    // ---------- Ascending data ----------
+    app.get('/ascending', async(req, res) => {
+      let query = {}
+      if (req.query?.email) {
+        query = { email: req.query.email }
+      }
+      const result = await cameraShop.find(query).sort({price: -1}).toArray()
+      res.send(result)
+    })
 
 
     // ================== client site handel start ===================
